@@ -1,18 +1,43 @@
 // Dashboard page
 "use client";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { employeeApi } from "@/lib/api";
+import type { Employee } from "@/types/employee";
 import { Users, TrendingUp, AlertCircle, UserPlus } from "lucide-react";
 
 export default function DashboardPage() {
-  const stats = [
-    { title: "Total Employees", value: "254", icon: Users, color: "bg-blue-500" },
-    { title: "Active Today", value: "198", icon: TrendingUp, color: "bg-green-500" },
-    { title: "On Leave", value: "42", icon: AlertCircle, color: "bg-yellow-500" },
-  ];
+  const [employees, setEmployees] = useState<Employee[]>([]);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await employeeApi.getAll();
+        const list = Array.isArray(response.data?.data) ? response.data.data : [];
+        setEmployees(list);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+        setEmployees([]);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
+  const stats = useMemo(() => {
+    const totalEmployees = employees.length;
+    const activeEmployees = employees.filter((employee) => employee.status === "ACTIVE").length;
+    const onLeaveEmployees = employees.filter((employee) => employee.status === "ON_LEAVE").length;
+
+    return [
+      { title: "Total Employees", value: String(totalEmployees), icon: Users, color: "bg-blue-500" },
+      { title: "Active Employees", value: String(activeEmployees), icon: TrendingUp, color: "bg-green-500" },
+      { title: "On Leave", value: String(onLeaveEmployees), icon: AlertCircle, color: "bg-yellow-500" },
+    ];
+  }, [employees]);
 
   return (
     <Layout>
@@ -59,28 +84,8 @@ export default function DashboardPage() {
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between pb-4 border-b">
-                <div>
-                  <p className="font-medium text-gray-900">New Employee Added</p>
-                  <p className="text-sm text-gray-500">John Doe joined Engineering</p>
-                </div>
-                <p className="text-sm text-gray-500">2 hours ago</p>
-              </div>
-              <div className="flex items-center justify-between pb-4 border-b">
-                <div>
-                  <p className="font-medium text-gray-900">Document Updated</p>
-                  <p className="text-sm text-gray-500">Jane Smith updated personal details</p>
-                </div>
-                <p className="text-sm text-gray-500">5 hours ago</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-gray-900">Employee On Leave</p>
-                  <p className="text-sm text-gray-500">Mike Johnson is on leave until 25th</p>
-                </div>
-                <p className="text-sm text-gray-500">1 day ago</p>
-              </div>
+            <div className="py-8 text-center">
+              <p className="text-gray-600">No recent activity available</p>
             </div>
           </CardContent>
         </Card>

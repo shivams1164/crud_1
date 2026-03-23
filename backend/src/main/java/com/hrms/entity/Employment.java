@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "employment")
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -23,6 +25,7 @@ public class Employment extends BaseEntity {
     private String endDate;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isCurrentJob = false;
 
     private String reportingManager;

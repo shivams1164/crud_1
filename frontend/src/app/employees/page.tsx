@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Layout } from "@/components/layout/Layout";
 import { EmployeeTable } from "@/components/employee/EmployeeTable";
 import { Button } from "@/components/ui/Button";
-import { Input, Select } from "@/components/ui/FormElements";
+import { Select } from "@/components/ui/FormElements";
 import { Card } from "@/components/ui/Card";
 import { employeeApi } from "@/lib/api";
 import { UserPlus, Filter } from "lucide-react";
@@ -23,46 +23,6 @@ export default function EmployeesPage() {
   const departments = ["Engineering", "HR", "Sales", "Marketing", "Finance", "Operations"];
   const statusOptions = ["ACTIVE", "INACTIVE", "ON_LEAVE", "TERMINATED"];
 
-  // Mock data for demo (replace with API calls)
-  const mockEmployees: Employee[] = [
-    {
-      id: "1",
-      firstName: "John",
-      lastName: "Doe",
-      email: "john@example.com",
-      phone: "9876543210",
-      employeeId: "EMP001",
-      designation: "Senior Engineer",
-      department: "Engineering",
-      dateOfJoining: "2022-01-15",
-      status: "ACTIVE",
-    },
-    {
-      id: "2",
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "jane@example.com",
-      phone: "9876543211",
-      employeeId: "EMP002",
-      designation: "HR Manager",
-      department: "HR",
-      dateOfJoining: "2021-06-10",
-      status: "ACTIVE",
-    },
-    {
-      id: "3",
-      firstName: "Mike",
-      lastName: "Johnson",
-      email: "mike@example.com",
-      phone: "9876543212",
-      employeeId: "EMP003",
-      designation: "Sales Executive",
-      department: "Sales",
-      dateOfJoining: "2023-03-20",
-      status: "ON_LEAVE",
-    },
-  ];
-
   useEffect(() => {
     fetchEmployees();
   }, [currentPage, searchQuery, department, status]);
@@ -70,16 +30,23 @@ export default function EmployeesPage() {
   const fetchEmployees = async () => {
     setIsLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const response = await employeeApi.getAll(currentPage, 10, searchQuery);
-      // setEmployees(response.data.data?.content || []);
-      // setTotalPages(response.data.data?.totalPages || 1);
+      const response = await employeeApi.getAll(currentPage, 10, searchQuery);
+      const payload = response.data?.data;
+      const list: Employee[] = Array.isArray(payload) ? payload : payload?.content || [];
 
-      // Mock data for now
-      setEmployees(mockEmployees);
-      setTotalPages(1);
+      const filtered = list.filter((employee) => {
+        const matchesDepartment = department ? employee.department === department : true;
+        const matchesStatus = status ? employee.status === status : true;
+
+        return matchesDepartment && matchesStatus;
+      });
+
+      setEmployees(filtered);
+      setTotalPages(Array.isArray(payload) ? 1 : payload?.totalPages || 1);
     } catch (error) {
       console.error("Failed to fetch employees:", error);
+      setEmployees([]);
+      setTotalPages(1);
     } finally {
       setIsLoading(false);
     }
@@ -97,8 +64,10 @@ export default function EmployeesPage() {
 
   const handleDelete = (employee: Employee) => {
     if (confirm(`Are you sure you want to delete ${employee.firstName} ${employee.lastName}?`)) {
-      console.log("Delete employee:", employee);
-      // TODO: Call delete API and refresh list
+      employeeApi
+        .delete(String(employee.id))
+        .then(fetchEmployees)
+        .catch((error) => console.error("Failed to delete employee:", error));
     }
   };
 

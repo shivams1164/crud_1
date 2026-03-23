@@ -15,9 +15,9 @@ mysql -u root -p < backend/src/main/resources/schema.sql
 ```
 
 ### 2. Start Backend (Terminal 1)
-```bash
+```powershell
 cd backend
-mvn spring-boot:run
+.\mvnw.cmd spring-boot:run
 # Runs on http://localhost:8080/api
 ```
 
@@ -170,7 +170,6 @@ NEXT_PUBLIC_API_URL=http://localhost:8080/api
 
 - **Node.js** 18+
 - **Java** 17+
-- **Maven** 3.8+
 - **MySQL** 8.0+
 - **Git**
 
@@ -189,8 +188,13 @@ mysql -u root -p < backend/src/main/resources/schema.sql
 
 ### Port Already in Use
 ```bash
-# Kill port 8080
-lsof -i :8080 | awk 'NR != 1 {print $2}' | xargs kill -9
+# Windows PowerShell: kill process on port 8080
+$pid = (Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess)
+if ($pid) { Stop-Process -Id $pid -Force }
+
+# Windows PowerShell: kill process on port 3000
+$pid = (Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess)
+if ($pid) { Stop-Process -Id $pid -Force }
 ```
 
 ### Frontend Can't Reach API

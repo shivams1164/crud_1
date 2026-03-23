@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateEmployeeSchema } from "@/lib/schemas";
 import type { CreateEmployeeFormData } from "@/lib/schemas";
+import { employeeApi } from "@/lib/api";
 import { ChevronLeft, ChevronRight, Save, FileText } from "lucide-react";
 
 const steps = [
@@ -30,6 +31,7 @@ export default function AddEmployeePage() {
     formState: { errors },
     watch,
     getValues,
+    trigger,
   } = useForm<CreateEmployeeFormData>({
     resolver: zodResolver(CreateEmployeeSchema),
     mode: "onChange",
@@ -40,15 +42,30 @@ export default function AddEmployeePage() {
   const onSubmit = async (data: CreateEmployeeFormData) => {
     try {
       setIsSaving(true);
-      // TODO: Replace with actual API call
-      // await employeeApi.create(data);
-      console.log("Employee created:", data);
+      await employeeApi.create(data);
       router.push("/employees");
     } catch (error) {
       console.error("Failed to create employee:", error);
+      alert("Failed to create employee. Please check the form and try again.");
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const validateCurrentStep = async () => {
+    const stepFields: Record<number, Array<keyof CreateEmployeeFormData>> = {
+      1: ["firstName", "lastName", "email", "phone"],
+      2: ["employeeId", "designation", "department"],
+      3: ["dateOfJoining", "status"],
+      4: [],
+    };
+
+    const fields = stepFields[currentStep] || [];
+    if (fields.length === 0) {
+      return true;
+    }
+
+    return trigger(fields);
   };
 
   const isStepComplete = (stepNum: number) => {
@@ -131,7 +148,7 @@ export default function AddEmployeePage() {
                       <Label htmlFor="firstName">First Name *</Label>
                       <Input
                         id="firstName"
-                        placeholder="John"
+                        placeholder="Enter first name"
                         {...register("firstName")}
                         className={errors.firstName ? "border-red-500" : ""}
                       />
@@ -144,7 +161,7 @@ export default function AddEmployeePage() {
                       <Label htmlFor="lastName">Last Name *</Label>
                       <Input
                         id="lastName"
-                        placeholder="Doe"
+                        placeholder="Enter last name"
                         {...register("lastName")}
                         className={errors.lastName ? "border-red-500" : ""}
                       />
@@ -158,7 +175,7 @@ export default function AddEmployeePage() {
                       <Input
                         id="email"
                         type="email"
-                        placeholder="john@example.com"
+                        placeholder="Enter work email"
                         {...register("email")}
                         className={errors.email ? "border-red-500" : ""}
                       />
@@ -169,7 +186,7 @@ export default function AddEmployeePage() {
                       <Label htmlFor="phone">Phone *</Label>
                       <Input
                         id="phone"
-                        placeholder="9876543210"
+                        placeholder="Enter phone number"
                         {...register("phone")}
                         className={errors.phone ? "border-red-500" : ""}
                       />
@@ -185,7 +202,7 @@ export default function AddEmployeePage() {
                       <Label htmlFor="employeeId">Employee ID *</Label>
                       <Input
                         id="employeeId"
-                        placeholder="EMP001"
+                        placeholder="Enter employee ID"
                         {...register("employeeId")}
                         className={errors.employeeId ? "border-red-500" : ""}
                       />
@@ -323,7 +340,13 @@ export default function AddEmployeePage() {
             {currentStep < 4 ? (
               <Button
                 type="button"
-                onClick={() => setCurrentStep(Math.min(4, currentStep + 1))}
+                onClick={async () => {
+                  const isValid = await validateCurrentStep();
+                  if (!isValid) {
+                    return;
+                  }
+                  setCurrentStep(Math.min(4, currentStep + 1));
+                }}
                 disabled={!canProceed}
                 className="gap-2"
               >

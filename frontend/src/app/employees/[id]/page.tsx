@@ -25,123 +25,75 @@ export default function EmployeeDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Mock employee data
-  const mockEmployee: Employee = {
-    id: "1",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "9876543210",
-    employeeId: "EMP001",
-    designation: "Senior Software Engineer",
-    department: "Engineering",
-    dateOfJoining: "2022-01-15",
-    status: "ACTIVE",
-    profilePhotoUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-    personalDetails: {
-      id: "1",
-      dateOfBirth: "1990-05-20",
-      gender: "MALE",
-      bloodGroup: "O+",
-      maritalStatus: "MARRIED",
-      nationality: "Indian",
-      aadharNumber: "123456789012",
-      panNumber: "ABCDE1234F",
-    },
-    addresses: [
-      {
-        id: "1",
-        type: "PERMANENT",
-        street: "123 Main St",
-        city: "Bangalore",
-        state: "KA",
-        country: "India",
-        zipCode: "560001",
-        isPrimary: true,
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        degree: "B.Tech",
-        fieldOfStudy: "Computer Science",
-        school: "IIT Bangalore",
-        startDate: "2012-06-01",
-        endDate: "2016-05-31",
-        description: "First Class with Distinction",
-      },
-    ],
-    employment: [
-      {
-        id: "1",
-        jobTitle: "Senior Software Engineer",
-        department: "Engineering",
-        startDate: "2022-01-15",
-        isCurrentJob: true,
-        reportingManager: "Alice Johnson",
-        salary: 1200000,
-        employmentType: "FULL_TIME",
-      },
-    ],
-    family: [
-      {
-        id: "1",
-        name: "Sarah Doe",
-        relationship: "SPOUSE",
-        dateOfBirth: "1992-08-10",
-        dependentStatus: "DEPENDENT",
-      },
-    ],
-    bankDetails: {
-      id: "1",
-      accountHolderName: "John Doe",
-      accountNumber: "9876543210123456",
-      ifscCode: "ICIC0000001",
-      bankName: "ICICI Bank",
-      branchName: "Bangalore Main",
-      accountType: "SAVINGS",
-    },
-    pfDetails: {
-      id: "1",
-      uan: "123456789012",
-      pfNumber: "KA/12345/123456",
-      pfJoiningDate: "2022-01-15",
-      employeeContribution: 12000,
-      employerContribution: 12000,
-    },
-    documents: [
-      {
-        id: "1",
-        type: "AADHAAR",
-        fileName: "Aadhaar.pdf",
-        fileUrl: "#",
-        uploadedAt: "2022-01-15",
-      },
-    ],
-    assets: [
-      {
-        id: "1",
-        type: "LAPTOP",
-        serialNumber: "SN-12345",
-        allocationDate: "2022-01-15",
-        notes: "MacBook Pro 16 inch",
-      },
-    ],
-  };
-
   useEffect(() => {
     fetchEmployeeDetails();
   }, [employeeId]);
 
   const fetchEmployeeDetails = async () => {
-    setIsLoading(false);
+    setIsLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const response = await employeeApi.getById(employeeId);
-      // setEmployee(response.data.data);
-      setEmployee(mockEmployee);
+      const [employeeRes, personalRes, addressesRes, educationRes, employmentRes, familyRes, bankRes, pfRes, documentsRes, assetsRes] =
+        await Promise.allSettled([
+          employeeApi.getById(employeeId),
+          employeeApi.getPersonalDetails(employeeId),
+          employeeApi.getAddresses(employeeId),
+          employeeApi.getEducation(employeeId),
+          employeeApi.getEmployment(employeeId),
+          employeeApi.getFamily(employeeId),
+          employeeApi.getBankDetails(employeeId),
+          employeeApi.getPFDetails(employeeId),
+          employeeApi.getDocuments(employeeId),
+          employeeApi.getAssets(employeeId),
+        ]);
+
+      if (employeeRes.status !== "fulfilled") {
+        setEmployee(null);
+        return;
+      }
+
+      const baseEmployee = employeeRes.value.data?.data;
+      if (!baseEmployee) {
+        setEmployee(null);
+        return;
+      }
+
+      const nextEmployee: Employee = {
+        ...baseEmployee,
+        personalDetails: personalRes.status === "fulfilled" ? personalRes.value.data?.data : baseEmployee.personalDetails,
+        addresses:
+          addressesRes.status === "fulfilled"
+            ? addressesRes.value.data?.data || []
+            : baseEmployee.addresses || [],
+        education:
+          educationRes.status === "fulfilled"
+            ? educationRes.value.data?.data || []
+            : baseEmployee.education || [],
+        employment:
+          employmentRes.status === "fulfilled"
+            ? employmentRes.value.data?.data || []
+            : baseEmployee.employment || [],
+        family:
+          familyRes.status === "fulfilled"
+            ? familyRes.value.data?.data || []
+            : baseEmployee.family || [],
+        bankDetails: bankRes.status === "fulfilled" ? bankRes.value.data?.data : baseEmployee.bankDetails,
+        pfDetails: pfRes.status === "fulfilled" ? pfRes.value.data?.data : baseEmployee.pfDetails,
+        documents:
+          documentsRes.status === "fulfilled"
+            ? documentsRes.value.data?.data || []
+            : baseEmployee.documents || [],
+        assets:
+          assetsRes.status === "fulfilled"
+            ? assetsRes.value.data?.data || []
+            : baseEmployee.assets || [],
+      };
+
+      setEmployee(nextEmployee);
     } catch (error) {
       console.error("Failed to fetch employee:", error);
+      setEmployee(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
