@@ -22,10 +22,10 @@ cd backend
 ```
 
 ### 3. Start Frontend (Terminal 2)
-```bash
+```powershell
 cd frontend
 npm install
-npm run dev
+npm.cmd run dev
 # Runs on http://localhost:3000
 ```
 
@@ -153,7 +153,9 @@ spring:
 
 ### Frontend API URL (frontend/.env.local)
 ```
-NEXT_PUBLIC_API_URL=http://localhost:8080/api
+# Optional. Default is /backend (proxied via next.config.ts)
+# Set only if you want to bypass proxy:
+# NEXT_PUBLIC_API_URL=http://127.0.0.1:8080/api
 ```
 
 ---
@@ -198,7 +200,9 @@ if ($pid) { Stop-Process -Id $pid -Force }
 ```
 
 ### Frontend Can't Reach API
-Make sure `NEXT_PUBLIC_API_URL` in `.env.local` matches your backend port
+1. Make sure backend is running on `http://localhost:8080`.
+2. Restart frontend after any config changes (`Ctrl+C`, then `npm.cmd run dev`).
+3. If using `.env.local`, ensure `NEXT_PUBLIC_API_URL` is correct.
 
 ---
 
