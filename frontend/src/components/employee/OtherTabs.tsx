@@ -183,12 +183,14 @@ export const BankPFTab: React.FC<BankPFTabProps> = ({
 interface DocumentsTabProps {
   documents: Document[] | undefined;
   onUpload?: () => void;
+  onEdit?: (document: Document) => void;
   onDelete?: (documentId: string) => void;
 }
 
 export const DocumentsTab: React.FC<DocumentsTabProps> = ({
   documents,
   onUpload,
+  onEdit,
   onDelete,
 }) => {
   if (!documents || documents.length === 0) {
@@ -226,6 +228,9 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
                   <h3 className="text-sm font-semibold text-gray-900 mt-2">{doc.fileName}</h3>
                 </div>
                 <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" onClick={() => onEdit?.(doc)}>
+                    <Edit2 size={16} />
+                  </Button>
                   <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
                     <Button variant="ghost" size="sm" className="gap-1">
                       <Download size={16} />

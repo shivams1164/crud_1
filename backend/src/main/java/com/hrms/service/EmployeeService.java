@@ -64,9 +64,9 @@ public class EmployeeService {
     public PersonalDetailsDTO getPersonalDetails(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-        PersonalDetails details = personalDetailsRepository.findByEmployee(employee)
-                .orElseThrow(() -> new RuntimeException("Personal details not found"));
-        return modelMapper.map(details, PersonalDetailsDTO.class);
+        return personalDetailsRepository.findByEmployee(employee)
+                .map(details -> modelMapper.map(details, PersonalDetailsDTO.class))
+                .orElse(null);
     }
 
     public PersonalDetailsDTO updatePersonalDetails(Long employeeId, PersonalDetailsDTO dto) {
@@ -79,6 +79,13 @@ public class EmployeeService {
         PersonalDetails saved = personalDetailsRepository.save(details);
         return modelMapper.map(saved, PersonalDetailsDTO.class);
     }
+
+        public void deletePersonalDetails(Long employeeId) {
+                Employee employee = employeeRepository.findById(employeeId)
+                                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                personalDetailsRepository.findByEmployee(employee)
+                                .ifPresent(personalDetailsRepository::delete);
+        }
 
     // Addresses
     public List<AddressDTO> getAddresses(Long employeeId) {
@@ -95,6 +102,16 @@ public class EmployeeService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         Address address = modelMapper.map(dto, Address.class);
         address.setEmployee(employee);
+        Address saved = addressRepository.save(address);
+        return modelMapper.map(saved, AddressDTO.class);
+    }
+
+    public AddressDTO updateAddress(Long employeeId, Long addressId, AddressDTO dto) {
+        employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+        modelMapper.map(dto, address);
         Address saved = addressRepository.save(address);
         return modelMapper.map(saved, AddressDTO.class);
     }
@@ -122,6 +139,16 @@ public class EmployeeService {
         return modelMapper.map(saved, EducationDTO.class);
     }
 
+    public EducationDTO updateEducation(Long employeeId, Long educationId, EducationDTO dto) {
+        employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        Education education = educationRepository.findById(educationId)
+                .orElseThrow(() -> new RuntimeException("Education not found"));
+        modelMapper.map(dto, education);
+        Education saved = educationRepository.save(education);
+        return modelMapper.map(saved, EducationDTO.class);
+    }
+
     public void deleteEducation(Long educationId) {
         educationRepository.deleteById(educationId);
     }
@@ -141,6 +168,16 @@ public class EmployeeService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         Employment employment = modelMapper.map(dto, Employment.class);
         employment.setEmployee(employee);
+        Employment saved = employmentRepository.save(employment);
+        return modelMapper.map(saved, EmploymentDTO.class);
+    }
+
+    public EmploymentDTO updateEmployment(Long employeeId, Long employmentId, EmploymentDTO dto) {
+        employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        Employment employment = employmentRepository.findById(employmentId)
+                .orElseThrow(() -> new RuntimeException("Employment not found"));
+        modelMapper.map(dto, employment);
         Employment saved = employmentRepository.save(employment);
         return modelMapper.map(saved, EmploymentDTO.class);
     }
@@ -168,6 +205,16 @@ public class EmployeeService {
         return modelMapper.map(saved, FamilyMemberDTO.class);
     }
 
+    public FamilyMemberDTO updateFamilyMember(Long employeeId, Long memberId, FamilyMemberDTO dto) {
+        employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        FamilyMember member = familyMemberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Family member not found"));
+        modelMapper.map(dto, member);
+        FamilyMember saved = familyMemberRepository.save(member);
+        return modelMapper.map(saved, FamilyMemberDTO.class);
+    }
+
     public void deleteFamilyMember(Long memberId) {
         familyMemberRepository.deleteById(memberId);
     }
@@ -176,9 +223,9 @@ public class EmployeeService {
     public BankDetailsDTO getBankDetails(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-        BankDetails details = bankDetailsRepository.findByEmployee(employee)
-                .orElseThrow(() -> new RuntimeException("Bank details not found"));
-        return modelMapper.map(details, BankDetailsDTO.class);
+        return bankDetailsRepository.findByEmployee(employee)
+                .map(details -> modelMapper.map(details, BankDetailsDTO.class))
+                .orElse(null);
     }
 
     public BankDetailsDTO updateBankDetails(Long employeeId, BankDetailsDTO dto) {
@@ -192,13 +239,20 @@ public class EmployeeService {
         return modelMapper.map(saved, BankDetailsDTO.class);
     }
 
+        public void deleteBankDetails(Long employeeId) {
+                Employee employee = employeeRepository.findById(employeeId)
+                                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                bankDetailsRepository.findByEmployee(employee)
+                                .ifPresent(bankDetailsRepository::delete);
+        }
+
     // PF Details
     public PFDetailsDTO getPFDetails(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-        PFDetails details = pfDetailsRepository.findByEmployee(employee)
-                .orElseThrow(() -> new RuntimeException("PF details not found"));
-        return modelMapper.map(details, PFDetailsDTO.class);
+        return pfDetailsRepository.findByEmployee(employee)
+                .map(details -> modelMapper.map(details, PFDetailsDTO.class))
+                .orElse(null);
     }
 
     public PFDetailsDTO updatePFDetails(Long employeeId, PFDetailsDTO dto) {
@@ -211,6 +265,13 @@ public class EmployeeService {
         PFDetails saved = pfDetailsRepository.save(details);
         return modelMapper.map(saved, PFDetailsDTO.class);
     }
+
+        public void deletePFDetails(Long employeeId) {
+                Employee employee = employeeRepository.findById(employeeId)
+                                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                pfDetailsRepository.findByEmployee(employee)
+                                .ifPresent(pfDetailsRepository::delete);
+        }
 
     // Documents
     public List<DocumentDTO> getDocuments(Long employeeId) {
@@ -227,6 +288,16 @@ public class EmployeeService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         Document document = modelMapper.map(dto, Document.class);
         document.setEmployee(employee);
+        Document saved = documentRepository.save(document);
+        return modelMapper.map(saved, DocumentDTO.class);
+    }
+
+    public DocumentDTO updateDocument(Long employeeId, Long documentId, DocumentDTO dto) {
+        employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+        modelMapper.map(dto, document);
         Document saved = documentRepository.save(document);
         return modelMapper.map(saved, DocumentDTO.class);
     }
@@ -250,6 +321,16 @@ public class EmployeeService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         Asset asset = modelMapper.map(dto, Asset.class);
         asset.setEmployee(employee);
+        Asset saved = assetRepository.save(asset);
+        return modelMapper.map(saved, AssetDTO.class);
+    }
+
+    public AssetDTO updateAsset(Long employeeId, Long assetId, AssetDTO dto) {
+        employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        Asset asset = assetRepository.findById(assetId)
+                .orElseThrow(() -> new RuntimeException("Asset not found"));
+        modelMapper.map(dto, asset);
         Asset saved = assetRepository.save(asset);
         return modelMapper.map(saved, AssetDTO.class);
     }

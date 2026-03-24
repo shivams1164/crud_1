@@ -1,7 +1,7 @@
 // Layout component: Navbar
 "use client";
 import React, { useState } from "react";
-import { Search, Menu, Bell, User } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/FormElements";
 
 interface NavbarProps {
@@ -38,20 +38,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick, onSearch }) => {
               className="pl-10 bg-gray-50 border-gray-300 focus:bg-white"
             />
           </div>
-        </div>
-
-        {/* Right section */}
-        <div className="flex items-center space-x-4">
-          <button className="relative text-gray-600 hover:text-gray-900 transition-colors">
-            <Bell size={20} />
-            <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-              3
-            </span>
-          </button>
-
-          <button className="text-gray-600 hover:text-gray-900 transition-colors">
-            <User size={20} />
-          </button>
         </div>
       </div>
     </div>

@@ -101,6 +101,17 @@ public class EmployeeController {
         );
     }
 
+    @DeleteMapping("/{employeeId}/personal-details")
+    public ResponseEntity<ApiResponse<Void>> deletePersonalDetails(@PathVariable Long employeeId) {
+        employeeService.deletePersonalDetails(employeeId);
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .success(true)
+                        .message("Personal details deleted successfully")
+                        .build()
+        );
+    }
+
     // Address Endpoints
     @GetMapping("/{employeeId}/addresses")
     public ResponseEntity<ApiResponse<List<AddressDTO>>> getAddresses(@PathVariable Long employeeId) {
@@ -121,6 +132,18 @@ public class EmployeeController {
                 ApiResponse.<AddressDTO>builder()
                         .success(true)
                         .message("Address added successfully")
+                        .data(address)
+                        .build()
+        );
+    }
+
+    @PutMapping("/{employeeId}/addresses/{addressId}")
+    public ResponseEntity<ApiResponse<AddressDTO>> updateAddress(@PathVariable Long employeeId, @PathVariable Long addressId, @RequestBody AddressDTO dto) {
+        AddressDTO address = employeeService.updateAddress(employeeId, addressId, dto);
+        return ResponseEntity.ok(
+                ApiResponse.<AddressDTO>builder()
+                        .success(true)
+                        .message("Address updated successfully")
                         .data(address)
                         .build()
         );
@@ -162,6 +185,18 @@ public class EmployeeController {
         );
     }
 
+    @PutMapping("/{employeeId}/education/{educationId}")
+    public ResponseEntity<ApiResponse<EducationDTO>> updateEducation(@PathVariable Long employeeId, @PathVariable Long educationId, @RequestBody EducationDTO dto) {
+        EducationDTO education = employeeService.updateEducation(employeeId, educationId, dto);
+        return ResponseEntity.ok(
+                ApiResponse.<EducationDTO>builder()
+                        .success(true)
+                        .message("Education updated successfully")
+                        .data(education)
+                        .build()
+        );
+    }
+
     @DeleteMapping("/{employeeId}/education/{educationId}")
     public ResponseEntity<ApiResponse<Void>> deleteEducation(@PathVariable Long employeeId, @PathVariable Long educationId) {
         employeeService.deleteEducation(educationId);
@@ -193,6 +228,18 @@ public class EmployeeController {
                 ApiResponse.<EmploymentDTO>builder()
                         .success(true)
                         .message("Employment added successfully")
+                        .data(employment)
+                        .build()
+        );
+    }
+
+    @PutMapping("/{employeeId}/employment/{employmentId}")
+    public ResponseEntity<ApiResponse<EmploymentDTO>> updateEmployment(@PathVariable Long employeeId, @PathVariable Long employmentId, @RequestBody EmploymentDTO dto) {
+        EmploymentDTO employment = employeeService.updateEmployment(employeeId, employmentId, dto);
+        return ResponseEntity.ok(
+                ApiResponse.<EmploymentDTO>builder()
+                        .success(true)
+                        .message("Employment updated successfully")
                         .data(employment)
                         .build()
         );
@@ -234,6 +281,18 @@ public class EmployeeController {
         );
     }
 
+    @PutMapping("/{employeeId}/family/{memberId}")
+    public ResponseEntity<ApiResponse<FamilyMemberDTO>> updateFamilyMember(@PathVariable Long employeeId, @PathVariable Long memberId, @RequestBody FamilyMemberDTO dto) {
+        FamilyMemberDTO member = employeeService.updateFamilyMember(employeeId, memberId, dto);
+        return ResponseEntity.ok(
+                ApiResponse.<FamilyMemberDTO>builder()
+                        .success(true)
+                        .message("Family member updated successfully")
+                        .data(member)
+                        .build()
+        );
+    }
+
     @DeleteMapping("/{employeeId}/family/{memberId}")
     public ResponseEntity<ApiResponse<Void>> deleteFamilyMember(@PathVariable Long employeeId, @PathVariable Long memberId) {
         employeeService.deleteFamilyMember(memberId);
@@ -270,6 +329,17 @@ public class EmployeeController {
         );
     }
 
+    @DeleteMapping("/{employeeId}/bank-details")
+    public ResponseEntity<ApiResponse<Void>> deleteBankDetails(@PathVariable Long employeeId) {
+        employeeService.deleteBankDetails(employeeId);
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .success(true)
+                        .message("Bank details deleted successfully")
+                        .build()
+        );
+    }
+
     // PF Details Endpoints
     @GetMapping("/{employeeId}/pf-details")
     public ResponseEntity<ApiResponse<PFDetailsDTO>> getPFDetails(@PathVariable Long employeeId) {
@@ -295,6 +365,17 @@ public class EmployeeController {
         );
     }
 
+    @DeleteMapping("/{employeeId}/pf-details")
+    public ResponseEntity<ApiResponse<Void>> deletePFDetails(@PathVariable Long employeeId) {
+        employeeService.deletePFDetails(employeeId);
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .success(true)
+                        .message("PF details deleted successfully")
+                        .build()
+        );
+    }
+
     // Documents Endpoints
     @GetMapping("/{employeeId}/documents")
     public ResponseEntity<ApiResponse<List<DocumentDTO>>> getDocuments(@PathVariable Long employeeId) {
@@ -315,6 +396,18 @@ public class EmployeeController {
                 ApiResponse.<DocumentDTO>builder()
                         .success(true)
                         .message("Document added successfully")
+                        .data(document)
+                        .build()
+        );
+    }
+
+    @PutMapping("/{employeeId}/documents/{documentId}")
+    public ResponseEntity<ApiResponse<DocumentDTO>> updateDocument(@PathVariable Long employeeId, @PathVariable Long documentId, @RequestBody DocumentDTO dto) {
+        DocumentDTO document = employeeService.updateDocument(employeeId, documentId, dto);
+        return ResponseEntity.ok(
+                ApiResponse.<DocumentDTO>builder()
+                        .success(true)
+                        .message("Document updated successfully")
                         .data(document)
                         .build()
         );
@@ -351,6 +444,18 @@ public class EmployeeController {
                 ApiResponse.<AssetDTO>builder()
                         .success(true)
                         .message("Asset added successfully")
+                        .data(asset)
+                        .build()
+        );
+    }
+
+    @PutMapping("/{employeeId}/assets/{assetId}")
+    public ResponseEntity<ApiResponse<AssetDTO>> updateAsset(@PathVariable Long employeeId, @PathVariable Long assetId, @RequestBody AssetDTO dto) {
+        AssetDTO asset = employeeService.updateAsset(employeeId, assetId, dto);
+        return ResponseEntity.ok(
+                ApiResponse.<AssetDTO>builder()
+                        .success(true)
+                        .message("Asset updated successfully")
                         .data(asset)
                         .build()
         );
